@@ -1,14 +1,11 @@
 {
   "name": "sudoku-solver",
   "version": "0.0.1",
-  "description": "Sudoku solver app just becuase I am not good at sudoku solving but know how to be a good by a little help of computer",
-  "productName": "Sudoku Solver",
-  "cordovaId": "org.cordova.quasar.app",
-  "capacitorId": "",
-  "author": "Luboš Matejčík <lubos.matejcik@gmail.com>",
   "private": true,
+  "description": "Sudoku solver app just becuase I am not good at sudoku solving but know how to be a good by a little help of computer",
+  "author": "Luboš Matejčík <lubos.matejcik@gmail.com>",
   "scripts": {
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore ./",
+    "lint": "vue-cli-service lint",
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
@@ -18,20 +15,37 @@
   },
   "devDependencies": {
     "@quasar/app": "^1.0.0",
+    "@vue/cli-plugin-eslint": "~4.3.0",
+    "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.9.0",
     "eslint-loader": "^3.0.3",
-    "eslint-plugin-vue": "^6.1.2"
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-vue": "^6.2.2",
+    "lint-staged": "^9.5.0",
+    "prettier": "^1.19.1"
   },
+  "browserslist": [
+    "last 1 version, not dead, ie >= 11"
+  ],
+  "capacitorId": "",
+  "cordovaId": "org.cordova.quasar.app",
   "engines": {
     "node": ">= 10.18.1",
     "npm": ">= 6.13.4",
     "yarn": ">= 1.21.1"
   },
-  "browserslist": [
-    "last 1 version, not dead, ie >= 11"
-  ],
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,vue}": [
+      "vue-cli-service lint",
+      "git add"
+    ]
+  },
+  "productName": "Sudoku Solver",
   "resolutions": {
     "@babel/parser": "7.7.5"
   }
