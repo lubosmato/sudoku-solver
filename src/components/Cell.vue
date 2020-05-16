@@ -3,8 +3,9 @@
     <input
       type="text"
       ref="input"
-      v-model="value"
+      v-model.number="value"
       :class="{ input: true, invalid: hasError }"
+      :readonly="isLocked"
       @focus="focus"
       @keydown="onKeyDown"
     />
@@ -27,12 +28,15 @@ export default {
     hasError() {
       return this.cell.hasError
     },
+    isLocked() {
+      return this.cell.isLocked
+    },
     value: {
       get() {
         return this.cell.value
       },
       set(value) {
-        this.$store.commit("sudoku/SET_VALUE", { ...this.position, value })
+        this.$store.commit("sudoku/setValue", { ...this.position, value })
       },
     },
   },
@@ -69,11 +73,14 @@ export default {
   border: none;
   width: 100%;
   height: 100%;
-  font-size: 5em;
+  font-size: 8vmin;
   text-align: justify;
   text-align-last: center;
   &.invalid {
-    border: 3px solid red;
+    border: 3px solid rgba(255, 0, 0, 0.637);
+  }
+  &:read-only {
+    background: rgb(213, 239, 255);
   }
 }
 </style>

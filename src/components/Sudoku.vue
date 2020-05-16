@@ -5,7 +5,7 @@
         class="cell"
         :position="{ x, y }"
         :test="cell"
-        v-for="{ x, y, cell } in numbers"
+        v-for="{ x, y, cell } in grid"
         :key="`${x}-${y}`"
         @move="move"
         :ref="`cell_${x}_${y}`"
@@ -22,7 +22,7 @@ export default {
   name: "Sudoku",
   components: { Cell },
   computed: {
-    ...mapState("sudoku", ["numbers"]),
+    ...mapState("sudoku", ["grid"]),
   },
   methods: {
     move({ where, currentPosition }) {
@@ -55,7 +55,7 @@ export default {
   }
 
   .main-grid {
-    $border-color: rgb(196, 196, 196);
+    $border-color: rgb(99, 99, 99);
 
     position: absolute;
     width: 100%;
