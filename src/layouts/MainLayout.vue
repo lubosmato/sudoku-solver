@@ -1,10 +1,10 @@
 <template>
   <q-layout view="hHh LpR fFf">
-    <q-drawer show-if-above v-model="left" side="left" bordered>
+    <q-drawer show-if-above v-model="left" side="left" bordered v-if="$q.platform.is.desktop">
       <SudokuControls />
     </q-drawer>
 
-    <q-page-container class="full-height">
+    <q-page-container>
       <router-view />
     </q-page-container>
   </q-layout>

@@ -1,25 +1,31 @@
 <template>
-  <div class="square">
-    <div class="main-grid">
-      <Cell
-        class="cell"
-        :position="{ x, y }"
-        v-for="{ x, y } in grid"
-        :key="`${x}-${y}`"
-        @move="move"
-        :ref="`cell_${x}_${y}`"
-      />
+  <div class="main-page wrap full-width row">
+    <div class="square col-12 col-sm-8 col-md-12 col-lg-12 q-pa-md">
+      <div class="main-grid">
+        <Cell
+          class="cell"
+          :position="{ x, y }"
+          v-for="{ x, y } in grid"
+          :key="`${x}-${y}`"
+          @move="move"
+          :ref="`cell_${x}_${y}`"
+        />
+      </div>
+    </div>
+    <div v-if="$q.platform.is.mobile" class="col-12 col-sm-4 col-md-12 col-lg-12 self-end">
+      <SudokuControls />
     </div>
   </div>
 </template>
 
 <script>
 import Cell from "components/Cell.vue"
+import SudokuControls from "components/SudokuControls.vue"
 import { mapState } from "vuex"
 
 export default {
   name: "Sudoku",
-  components: { Cell },
+  components: { Cell, SudokuControls },
   computed: {
     ...mapState("sudoku", ["grid"]),
   },
@@ -43,12 +49,18 @@ export default {
 </script>
 
 <style lang="scss">
+.main-page {
+  height: 100vh;
+  max-height: 100vh;
+}
+body.screen--lg,
+body.screen--xl {
+  .square {
+    width: 100vmin;
+    height: 100vmin;
+  }
+}
 .square {
-  $spacing: 3vh;
-  margin: $spacing;
-  width: calc(100vmin - #{$spacing * 2});
-  height: calc(100vmin - #{$spacing * 2});
-
   .main-grid {
     $border-color: rgb(37, 37, 37);
 

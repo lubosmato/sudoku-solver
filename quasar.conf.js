@@ -50,6 +50,11 @@ module.exports = function(/* ctx */) {
 
       // Quasar plugins
       plugins: [],
+      config: {
+        screen: {
+          bodyClasses: true,
+        },
+      },
     },
 
     // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie
