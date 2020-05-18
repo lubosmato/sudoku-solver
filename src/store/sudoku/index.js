@@ -2,7 +2,7 @@ import _ from "lodash"
 import Sudoku from "./sudoku.js"
 import Worker from "workerize-loader!./worker.js"
 
-const worker = new Worker()
+let worker = new Worker()
 
 export default {
   namespaced: true,
@@ -63,6 +63,11 @@ export default {
       } finally {
         commit("setWorking", false)
       }
+    },
+    async stop({ commit }) {
+      commit("setWorking", false)
+      worker.terminate()
+      worker = new Worker()
     },
   },
   state: {
