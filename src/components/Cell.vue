@@ -73,7 +73,7 @@ export default {
   border: none;
   width: 100%;
   height: 100%;
-  font-size: 8vmin;
+  font-size: 6vmin;
   text-align: justify;
   text-align-last: center;
   &.invalid {

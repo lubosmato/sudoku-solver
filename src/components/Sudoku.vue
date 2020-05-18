@@ -4,8 +4,7 @@
       <Cell
         class="cell"
         :position="{ x, y }"
-        :test="cell"
-        v-for="{ x, y, cell } in grid"
+        v-for="{ x, y } in grid"
         :key="`${x}-${y}`"
         @move="move"
         :ref="`cell_${x}_${y}`"
@@ -45,23 +44,16 @@ export default {
 
 <style lang="scss">
 .square {
-  position: relative;
-  width: 100vmin;
-
-  &:after {
-    content: "";
-    display: block;
-    padding-bottom: 100%;
-  }
+  $spacing: 3vh;
+  margin: $spacing;
+  width: calc(100vmin - #{$spacing * 2});
+  height: calc(100vmin - #{$spacing * 2});
 
   .main-grid {
-    $border-color: rgb(99, 99, 99);
+    $border-color: rgb(37, 37, 37);
 
-    position: absolute;
     width: 100%;
     height: 100%;
-
-    border: 1px solid $border-color;
 
     display: grid;
     grid-template-columns: repeat(9, 1fr);
@@ -74,6 +66,9 @@ export default {
       border: 1px solid $border-color;
       &:nth-child(3n) {
         border-right: 4px solid $border-color;
+      }
+      &:nth-child(9n) {
+        border: 1px solid $border-color;
       }
 
       &:nth-child(n + 19):nth-child(-n + 27) {
