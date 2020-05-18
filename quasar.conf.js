@@ -90,10 +90,6 @@ module.exports = function(/* ctx */) {
             formatter: require("eslint").CLIEngine.getFormatter("stylish"),
           },
         })
-        cfg.module.rules.push({
-          test: /\.worker\.js$/,
-          loader: "workerize-loader",
-        })
       },
     },
 

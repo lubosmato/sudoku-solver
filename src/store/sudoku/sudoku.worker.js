@@ -1,4 +1,4 @@
-import Sudoku from "./sudoku.js"
+const Sudoku = require("./sudoku").default
 
 export async function solve(grid) {
   const sudoku = createSudoku(grid)

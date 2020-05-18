@@ -1,8 +1,8 @@
 import _ from "lodash"
 import Sudoku from "./sudoku.js"
-import Worker from "workerize-loader!./worker.js"
+import SudokuWorker from "workerize-loader!./sudoku.worker.js"
 
-let worker = new Worker()
+let worker = SudokuWorker()
 
 export default {
   namespaced: true,
@@ -67,7 +67,7 @@ export default {
     async stop({ commit }) {
       commit("setWorking", false)
       worker.terminate()
-      worker = new Worker()
+      worker = SudokuWorker()
     },
   },
   state: {
