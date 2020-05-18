@@ -10,7 +10,7 @@ class Sudoku {
     for (let i = 0; i < sudokuSize; i++) {
       const row = []
       for (let j = 0; j < sudokuSize; j++) {
-        row.push({ value: null, isLocked: false, hasError: true })
+        row.push({ value: null, isLocked: false, hasError: false })
       }
       this.grid.push(row)
     }
@@ -57,7 +57,10 @@ class Sudoku {
 
   updateError(cellX, cellY) {
     const value = this.grid[cellY][cellX].value
-    if (!value) return
+    if (!value) {
+      this.grid[cellY][cellX].hasError = false
+      return
+    }
 
     const getValuesWithoutThisCell = generator => [...generator].filter(v => !(v.x === cellX && v.y === cellY))
 
@@ -175,7 +178,10 @@ class Sudoku {
   solve() {
     this.possibleSolutions = []
 
-    this.solveStep()
+    const hasErrors = this.grid.flat().some(cell => cell.hasError)
+    if (!hasErrors) {
+      this.solveStep()
+    }
 
     if (this.possibleSolutions.length == 0) {
       throw Error("No solution is found 😐")
@@ -228,7 +234,7 @@ class Sudoku {
     for (const { x, y } of this) {
       if (this.grid[y][x].isLocked) continue
       this.grid[y][x].value = null
-      this.grid[y][x].hasError = true
+      this.grid[y][x].hasError = false
     }
   }
 
