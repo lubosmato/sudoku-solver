@@ -1,18 +1,16 @@
 <template>
   <div class="q-px-md q-pt-md full-height full-width column">
     <div class="col q-gutter-y-md">
-      <q-btn-toggle
-        v-model="isLocked"
-        class="q-ma-none q-mt-md"
-        spread
-        toggle-color="primary"
-        color="white"
-        text-color="primary"
-        :options="[
-          { label: 'Locked', value: true },
-          { label: 'Unlocked', value: false },
-        ]"
-      />
+
+      <div class="row q-gutter-x-md">
+        <div class="col">
+          <q-btn color="primary" icon-right="lock" label="Lock" class="full-width" @click="lockFilled" />
+        </div>
+        <div class="col">
+          <q-btn color="primary" icon-right="lock_open" label="Unlock" class="full-width" @click="unlockAll" />
+        </div>
+      </div>
+
       <div class="row q-gutter-x-md">
         <div class="col">
           <q-btn color="red" icon-right="restore" label="Reset" class="full-width" @click="reset" />
@@ -172,7 +170,6 @@ export default {
   name: "SudokuControls",
   data() {
     return {
-      isLocked: false,
       difficulty: 1,
       workingMessage: "",
     }
@@ -189,13 +186,6 @@ export default {
         const emoji = randomEmoji()
         const message = randomFact()
         this.workingMessage = `Did you know that ${message}? ${emoji}`
-      }
-    },
-    isLocked(val) {
-      if (val) {
-        this.lockFilled()
-      } else {
-        this.unlockAll()
       }
     },
   },
