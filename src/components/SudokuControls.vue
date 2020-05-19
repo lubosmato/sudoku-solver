@@ -73,6 +73,11 @@
 </template>
 
 <script>
+// TODO add share button with a link to generated sudoku
+// TODO add congratulation animation when successfuly finishing puzzle
+// TODO add load from camera button - line fitter - OCR for numbers, etc.
+// TODO add buttons for selecting numbers for mobile platform
+
 import { createNamespacedHelpers } from "vuex"
 const { mapMutations, mapState } = createNamespacedHelpers("sudoku")
 
@@ -162,8 +167,6 @@ const sudokuFacts = [
 function randomFact() {
   return sudokuFacts[Math.floor(Math.random() * sudokuFacts.length)]
 }
-
-// TODO add congratulation animation when successfuly finishing puzzle
 
 export default {
   name: "SudokuControls",
