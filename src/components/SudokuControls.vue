@@ -65,7 +65,7 @@
       </q-dialog>
     </div>
     <div class="text-caption author col-1 desktop-only">
-      Made with ❤️ and Quasar by <a href="https://github.com/lubosmato" target="_blank">lubosmato</a>
+      Made with ❤️ and Quasar <a href="https://github.com/lubosmato/sudoku-solver" target="_blank">source</a>
     </div>
   </div>
 </template>
