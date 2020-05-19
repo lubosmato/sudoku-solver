@@ -83,4 +83,17 @@ export default {
     background: rgb(213, 239, 255);
   }
 }
+
+.body--dark {
+  .input {
+    background: black;
+    color: white;
+    &.invalid {
+      border: 3px solid rgb(255, 33, 33);
+    }
+    &:read-only {
+      background: rgb(27, 54, 75);
+    }
+  }
+}
 </style>

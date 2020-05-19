@@ -1,7 +1,6 @@
 <template>
   <div class="q-px-md q-pt-md full-height full-width column">
     <div class="col q-gutter-y-md">
-
       <div class="row q-gutter-x-md">
         <div class="col">
           <q-btn color="primary" icon-right="lock" label="Lock" class="full-width" @click="lockFilled" />
@@ -204,7 +203,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .author {
   height: 2em;
 }

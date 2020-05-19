@@ -92,4 +92,27 @@ body.screen--xl {
     }
   }
 }
+
+.body--dark {
+  .main-grid {
+    $border-color: rgb(167, 167, 167);
+
+    & > .cell {
+      border: 1px solid $border-color;
+      &:nth-child(3n) {
+        border-right: 4px solid $border-color;
+      }
+      &:nth-child(9n) {
+        border: 1px solid $border-color;
+      }
+
+      &:nth-child(n + 19):nth-child(-n + 27) {
+        border-bottom: 4px solid $border-color;
+      }
+      &:nth-child(n + 46):nth-child(-n + 54) {
+        border-bottom: 4px solid $border-color;
+      }
+    }
+  }
+}
 </style>
