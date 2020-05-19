@@ -95,7 +95,7 @@ body.screen--xl {
 
 .body--dark {
   .main-grid {
-    $border-color: rgb(167, 167, 167);
+    $border-color: rgb(212, 212, 212);
 
     & > .cell {
       border: 1px solid $border-color;

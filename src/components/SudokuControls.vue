@@ -19,17 +19,25 @@
         </div>
       </div>
 
-      <q-item class="q-my-none">
-        <q-item-section avatar>
-          <q-icon :color="`red-${difficulty}`" name="extension" />
-        </q-item-section>
-        <q-item-section>
-          <q-slider v-model="difficulty" :min="1" :max="10" :step="1" snap label color="red" />
-        </q-item-section>
-      </q-item>
+      <q-slider v-model="difficulty" :min="1" :max="10" :step="1" snap label color="red" />
       <q-badge class="q-my-none" color="red">Difficulty: {{ difficulty }}</q-badge>
 
-      <q-btn color="primary" icon-right="fas fa-random" label="Generate" class="full-width q-mt-sm" @click="generate" />
+      <div class="row q-gutter-x-md q-mt-sm">
+        <q-btn color="red" icon="share" @click="share" />
+
+        <q-tooltip
+          :content-class="{ hidden: !isCopiedShown }"
+          content-style="font-size: 1em"
+          transition-show="scale"
+          transition-hide="scale"
+        >
+          Copied to clipboard
+        </q-tooltip>
+
+        <div class="col">
+          <q-btn color="primary" icon-right="fas fa-random" label="Generate" class="full-width" @click="generate" />
+        </div>
+      </div>
 
       <q-dialog :value="hasError" transition-show="scale" transition-hide="scale" @hide="acknowledgeError">
         <q-card class="bg-red text-white" style="width: 300px">
@@ -169,6 +177,7 @@ export default {
   name: "SudokuControls",
   data() {
     return {
+      isCopiedShown: false,
       difficulty: 1,
       workingMessage: "",
     }
@@ -198,6 +207,21 @@ export default {
     },
     stop() {
       this.$store.dispatch("sudoku/stop")
+    },
+    share() {
+      if (navigator.canShare()) {
+        navigator.share({
+          title: "Hey! Check out this Sudoku App 🙂",
+          text: "I just generated this Sudoku puzzle for you!",
+          url: window.location,
+        })
+      } else {
+        navigator.clipboard.writeText(window.location)
+        this.isCopiedShown = true
+        setTimeout(() => {
+          this.isCopiedShown = false
+        }, 2000)
+      }
     },
   },
 }

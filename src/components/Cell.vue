@@ -86,7 +86,7 @@ export default {
 
 .body--dark {
   .input {
-    background: black;
+    background: var(--q-color-dark);
     color: white;
     &.invalid {
       border: 3px solid rgb(255, 33, 33);
