@@ -54,6 +54,8 @@ export default {
   mounted() {
     if (this.sudoku) {
       this.$store.dispatch("sudoku/import", this.sudoku)
+    } else {
+      this.$store.dispatch("sudoku/generate", 1)
     }
   },
 }

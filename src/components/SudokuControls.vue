@@ -83,7 +83,6 @@
 // TODO add buttons for selecting numbers for mobile platform
 // TODO add export pdf button
 // TODO add print button
-// TODO generate simple sudoku on load
 
 import { createNamespacedHelpers } from "vuex"
 const { mapMutations, mapState } = createNamespacedHelpers("sudoku")
