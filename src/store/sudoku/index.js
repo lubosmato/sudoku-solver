@@ -10,6 +10,14 @@ export default {
     cell(state) {
       return (x, y) => state.grid.cell(x, y)
     },
+    exported(state) {
+      const gridValues = [...state.grid].map(({ cell }) => {
+        if (cell.value === null) return " "
+        return cell.value.toString()
+      })
+      const exported = btoa(gridValues.reduce((sum, c) => sum + c))
+      return exported
+    },
   },
   mutations: {
     setValue(state, { x, y, value }) {
@@ -62,6 +70,32 @@ export default {
         commit("updateError", e.message)
       } finally {
         commit("setWorking", false)
+      }
+    },
+    async import({ commit, dispatch }, sudoku) {
+      try {
+        const rawGrid = atob(sudoku)
+        const flatGrid = [...rawGrid].map(c => {
+          const isInputWrong = c.match(/[^\d ]/g)
+          if (isInputWrong) {
+            throw new Error()
+          }
+          if (c === " ") {
+            return { value: null }
+          } else {
+            return { value: parseInt(c) }
+          }
+        })
+        const grid = []
+        for (let y = 0; y < 9; y++) {
+          grid.push(flatGrid.splice(0, 9))
+        }
+        commit("updateGrid", grid)
+        commit("lockFilled")
+        await dispatch("solve")
+        commit("reset")
+      } catch {
+        commit("updateError", "Could not load sudoku 😥")
       }
     },
     async stop({ commit }) {

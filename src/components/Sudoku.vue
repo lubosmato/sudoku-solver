@@ -26,6 +26,12 @@ import { mapState } from "vuex"
 export default {
   name: "Sudoku",
   components: { Cell, SudokuControls },
+  props: {
+    sudoku: {
+      type: String,
+      default: "",
+    },
+  },
   computed: {
     ...mapState("sudoku", ["grid"]),
   },
@@ -44,6 +50,11 @@ export default {
       const cellToFocus = this.$refs[cellToFocusRef][0]
       cellToFocus.focus()
     },
+  },
+  mounted() {
+    if (this.sudoku) {
+      this.$store.dispatch("sudoku/import", this.sudoku)
+    }
   },
 }
 </script>

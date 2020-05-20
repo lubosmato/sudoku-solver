@@ -184,7 +184,7 @@ class Sudoku {
     }
 
     if (this.possibleSolutions.length == 0) {
-      throw Error("No solution is found 😐")
+      throw Error("Bad sudoku... No solution found 😐")
     } else if (this.possibleSolutions.length > 1) {
       throw Error("Puzzle has multiple solutions so it is invalid 😪")
     }

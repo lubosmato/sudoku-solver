@@ -1,6 +1,6 @@
 <template>
   <q-page class="flex">
-    <Sudoku />
+    <Sudoku :sudoku="$route.params.sudoku" />
   </q-page>
 </template>
 

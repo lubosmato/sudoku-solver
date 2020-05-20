@@ -78,7 +78,6 @@
 </template>
 
 <script>
-// TODO add share button with a link to generated sudoku
 // TODO add congratulation animation when successfuly finishing puzzle
 // TODO add load from camera button - line fitter - OCR for numbers, etc.
 // TODO add buttons for selecting numbers for mobile platform
@@ -169,7 +168,7 @@ const sudokuFacts = [
   "the name “Sudoku” can be broken down into “Su” which means “Number” and “Doku” which means “Single/Only.”",
   "the New York Time crossword editor predicted that the Sudoku mania wouldn’t last; he was wrong",
   "while a Sudoku puzzle can have more than one solution, a well-formed puzzle has just one unique solution",
-  "JavaScript is not very fast language?",
+  "JavaScript is not very fast language and this app is written in JavaScript",
 ]
 
 function randomFact() {
@@ -211,15 +210,18 @@ export default {
     stop() {
       this.$store.dispatch("sudoku/stop")
     },
-    share() {
-      if (navigator.canShare()) {
-        navigator.share({
-          title: "Hey! Check out this Sudoku App 🙂",
+    async share() {
+      const exportedSudoku = this.$store.getters["sudoku/exported"]
+      const url = `${window.location.origin}${this.$router.options.base}${exportedSudoku}`
+
+      try {
+        await navigator.share({
+          title: "Hey! Check this Sudoku 🙂",
           text: "I just generated this Sudoku puzzle for you!",
-          url: window.location,
+          url,
         })
-      } else {
-        navigator.clipboard.writeText(window.location)
+      } catch {
+        await navigator.clipboard.writeText(url)
         this.isCopiedShown = true
         setTimeout(() => {
           this.isCopiedShown = false
