@@ -62,7 +62,7 @@ export default {
   },
   methods: {
     playFanfare() {
-      const audio = new Audio("/statics/fanfare.mp3")
+      const audio = new Audio("./statics/fanfare.mp3")
       audio.play()
     },
     show() {
