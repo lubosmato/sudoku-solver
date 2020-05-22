@@ -1,20 +1,22 @@
 <template>
   <div>
-    <input
-      type="text"
-      ref="input"
-      v-model.number="value"
-      :class="{ input: true, invalid: hasError }"
-      :readonly="isLocked"
-      @focus="focus"
-      @keydown="onKeyDown"
-    />
+    <div @click="showNumbers" ref="input" :class="{ input: true, invalid: hasError, readonly: isLocked }">
+      {{ value }}
+    </div>
+    <div class="numbers hidden">
+      <q-banner>
+        <template v-slot:avatar>
+          <q-icon name="signal_wifi_off" color="primary" />
+        </template>
+        You have lost connection to the internet. This app is offline.
+      </q-banner>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Cell",
+  name: "CellMobile",
   props: {
     position: {
       type: Object,
@@ -41,28 +43,9 @@ export default {
     },
   },
   methods: {
-    onKeyDown(event) {
-      const { keyCode, key } = event
-      const keyCodeToMoveName = {
-        38: "up",
-        39: "right",
-        40: "down",
-        37: "left",
-      }
-
-      if (!(keyCode in keyCodeToMoveName)) {
-        if (key !== "Tab") {
-          setTimeout(() => this.$refs.input.select(), 0)
-        }
-        return
-      }
-
-      const moveName = keyCodeToMoveName[keyCode]
-      this.$emit("move", { where: moveName, currentPosition: this.position })
-      event.preventDefault()
-    },
-    focus() {
-      this.$refs.input.select()
+    showNumbers() {
+      if (this.isLocked) return
+      console.log("Hello")
     },
   },
 }
@@ -73,14 +56,16 @@ export default {
   border: none;
   width: 100%;
   height: 100%;
-  font-size: 6vmin;
-  text-align: justify;
-  text-align-last: center;
+
+  font-size: 5vmin;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   &.invalid {
     border: 3px solid rgba(255, 0, 0, 0.637);
   }
-  &:read-only {
-    user-select: none;
+  &.readonly {
     background: rgb(213, 239, 255);
   }
 }
@@ -92,7 +77,7 @@ export default {
     &.invalid {
       border: 3px solid rgb(255, 33, 33);
     }
-    &:read-only {
+    &.readonly {
       background: rgb(27, 54, 75);
     }
   }

@@ -3,10 +3,10 @@
     <div class="col q-gutter-y-md">
       <div class="row q-gutter-x-md">
         <div class="col">
-          <q-btn color="primary" icon-right="lock" label="Lock" class="full-width" @click="lockFilled" />
+          <q-btn color="primary" icon="lock" class="full-width" @click="lockFilled" />
         </div>
         <div class="col">
-          <q-btn color="primary" icon-right="lock_open" label="Unlock" class="full-width" @click="unlockAll" />
+          <q-btn color="primary" icon="lock_open" class="full-width" @click="unlockAll" />
         </div>
       </div>
 
@@ -78,7 +78,6 @@
 </template>
 
 <script>
-// TODO add congratulation animation when successfuly finishing puzzle
 // TODO add load from camera button - line fitter - OCR for numbers, etc.
 // TODO add buttons for selecting numbers for mobile platform
 // TODO add export pdf button
@@ -220,11 +219,15 @@ export default {
           url,
         })
       } catch {
-        await navigator.clipboard.writeText(url)
-        this.isCopiedShown = true
-        setTimeout(() => {
-          this.isCopiedShown = false
-        }, 2000)
+        try {
+          await navigator.clipboard.writeText(url)
+          this.isCopiedShown = true
+          setTimeout(() => {
+            this.isCopiedShown = false
+          }, 2000)
+        } catch {
+          this.$store.commit("sudoku/updateError", "Something went wrong 😥")
+        }
       }
     },
   },

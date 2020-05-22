@@ -1,7 +1,10 @@
 <template>
   <div class="main-page wrap full-width row">
     <div class="square col-12 col-sm-8 col-md-12 col-lg-12 q-pa-md">
-      <div class="main-grid">
+      <div class="main-grid" v-if="$q.platform.is.mobile && false">
+        <CellMobile class="cell" :position="{ x, y }" v-for="{ x, y } in grid" :key="`${x}-${y}`" />
+      </div>
+      <div class="main-grid" v-else>
         <Cell
           class="cell"
           :position="{ x, y }"
@@ -15,17 +18,20 @@
     <div v-if="$q.platform.is.mobile" class="col-12 col-sm-4 col-md-12 col-lg-12 self-end">
       <SudokuControls />
     </div>
+    <Congratulation ref="congratulation" />
   </div>
 </template>
 
 <script>
+import Congratulation from "components/Congratulation.vue"
+import CellMobile from "components/CellMobile.vue"
 import Cell from "components/Cell.vue"
 import SudokuControls from "components/SudokuControls.vue"
-import { mapState } from "vuex"
+import { mapState, mapGetters } from "vuex"
 
 export default {
   name: "Sudoku",
-  components: { Cell, SudokuControls },
+  components: { CellMobile, Cell, SudokuControls, Congratulation },
   props: {
     sudoku: {
       type: String,
@@ -34,6 +40,14 @@ export default {
   },
   computed: {
     ...mapState("sudoku", ["grid"]),
+    ...mapGetters("sudoku", ["hasFinishedWithoutHelp"]),
+  },
+  watch: {
+    hasFinishedWithoutHelp(val) {
+      if (val) {
+        this.$refs.congratulation.show()
+      }
+    },
   },
   methods: {
     move({ where, currentPosition }) {

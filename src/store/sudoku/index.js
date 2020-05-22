@@ -18,6 +18,13 @@ export default {
       const exported = btoa(gridValues.reduce((sum, c) => sum + c))
       return exported
     },
+    hasFinishedWithoutHelp(state) {
+      const isNotCompleted = state.grid.grid.flat().some(cell => cell.hasError || cell.value === null)
+      if (!isNotCompleted && !state.wasHelped) {
+        return true
+      }
+      return false
+    },
   },
   mutations: {
     setValue(state, { x, y, value }) {
@@ -44,9 +51,13 @@ export default {
     acknowledgeError(state) {
       state.errorMessage = ""
     },
+    setWasHelped(state, wasHelped) {
+      state.wasHelped = wasHelped
+    },
   },
   actions: {
     async solve({ state, commit }) {
+      commit("setWasHelped", true)
       try {
         commit("setWorking", true)
         const clonedGrid = _.cloneDeep(state.grid.grid)
@@ -59,6 +70,9 @@ export default {
       }
     },
     async generate({ state, commit }, difficulty) {
+      commit("unlockAll")
+      commit("reset")
+      commit("setWasHelped", false)
       try {
         commit("setWorking", true)
         const clonedGrid = _.cloneDeep(state.grid.grid)
@@ -73,6 +87,7 @@ export default {
       }
     },
     async import({ commit, dispatch }, sudoku) {
+      commit("setWasHelped", false)
       try {
         const rawGrid = atob(sudoku)
         const flatGrid = [...rawGrid].map(c => {
@@ -108,5 +123,6 @@ export default {
     grid: new Sudoku(9),
     errorMessage: "",
     isWorking: false,
+    wasHelped: false,
   },
 }
