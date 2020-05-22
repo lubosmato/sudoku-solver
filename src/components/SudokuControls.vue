@@ -210,7 +210,7 @@ export default {
     },
     async share() {
       const exportedSudoku = this.$store.getters["sudoku/exported"]
-      const url = `${window.location.origin}${this.$router.options.base}${exportedSudoku}`
+      const url = `${window.location.origin}${this.$router.options.base}${exportedSudoku}` // TODO will not work in "hash" router mode
 
       try {
         await navigator.share({

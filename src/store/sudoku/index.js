@@ -87,7 +87,6 @@ export default {
       }
     },
     async import({ commit, dispatch }, sudoku) {
-      commit("setWasHelped", false)
       try {
         const rawGrid = atob(sudoku)
         const flatGrid = [...rawGrid].map(c => {
@@ -109,6 +108,7 @@ export default {
         commit("lockFilled")
         await dispatch("solve")
         commit("reset")
+        commit("setWasHelped", false)
       } catch {
         commit("updateError", "Could not load sudoku 😥")
       }
