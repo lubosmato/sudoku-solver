@@ -79,7 +79,6 @@
 
 <script>
 // TODO add load from camera button - line fitter - OCR for numbers, etc.
-// TODO add buttons for selecting numbers for mobile platform
 // TODO add export pdf button
 // TODO add print button
 

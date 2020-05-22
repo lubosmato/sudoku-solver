@@ -1,7 +1,7 @@
 <template>
   <div class="main-page wrap full-width row">
     <div class="square col-12 col-sm-8 col-md-12 col-lg-12 q-pa-md">
-      <div class="main-grid" v-if="$q.platform.is.mobile && false">
+      <div class="main-grid" v-if="$q.platform.is.mobile">
         <CellMobile class="cell" :position="{ x, y }" v-for="{ x, y } in grid" :key="`${x}-${y}`" />
       </div>
       <div class="main-grid" v-else>

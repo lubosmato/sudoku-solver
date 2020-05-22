@@ -1,15 +1,16 @@
 <template>
   <div>
-    <div @click="showNumbers" ref="input" :class="{ input: true, invalid: hasError, readonly: isLocked }">
+    <div :class="{ input: true, invalid: hasError, readonly: isLocked }">
       {{ value }}
-    </div>
-    <div class="numbers hidden">
-      <q-banner>
-        <template v-slot:avatar>
-          <q-icon name="signal_wifi_off" color="primary" />
-        </template>
-        You have lost connection to the internet. This app is offline.
-      </q-banner>
+      <q-popup-edit
+        :disable="isLocked"
+        ref="numbers"
+        v-model="isNumbersShown"
+        content-class="numbers"
+        @before-hide="onNumbersHide"
+      >
+        <q-btn color="primary" :outline="value !== i" v-for="i in 9" :label="i" :key="i" @click="selectNumber(i)" />
+      </q-popup-edit>
     </div>
   </div>
 </template>
@@ -22,6 +23,12 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  data() {
+    return {
+      pressedNumber: null,
+      isNumbersShown: false,
+    }
   },
   computed: {
     cell() {
@@ -43,13 +50,34 @@ export default {
     },
   },
   methods: {
-    showNumbers() {
-      if (this.isLocked) return
-      console.log("Hello")
+    selectNumber(number) {
+      this.pressedNumber = number
+      this.$refs.numbers.set()
+    },
+    onNumbersHide() {
+      if (this.value === this.pressedNumber) {
+        this.value = null
+      } else {
+        this.value = this.pressedNumber
+      }
+      this.pressedNumber = null
     },
   },
 }
 </script>
+
+<style lang="scss">
+.numbers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-column-gap: 0.8em;
+  grid-row-gap: 0.8em;
+
+  max-width: initial;
+  max-height: initial;
+}
+</style>
 
 <style lang="scss" scoped>
 .input {
@@ -78,7 +106,7 @@ export default {
       border: 3px solid rgb(255, 33, 33);
     }
     &.readonly {
-      background: rgb(27, 54, 75);
+      background: rgb(52, 82, 105);
     }
   }
 }
