@@ -39,6 +39,16 @@
         </div>
       </div>
 
+      <div class="col">
+        <q-btn
+          color="primary"
+          icon-right="camera"
+          label="Load from camera"
+          class="full-width"
+          @click="loadFromCamera"
+        />
+      </div>
+
       <q-dialog :value="hasError" transition-show="scale" transition-hide="scale" @hide="acknowledgeError">
         <q-card class="bg-red text-white" style="width: 300px">
           <q-card-section>
@@ -82,6 +92,7 @@
 // TODO add export pdf button
 // TODO add print button
 
+import { createWorker } from "tesseract.js"
 import { createNamespacedHelpers } from "vuex"
 const { mapMutations, mapState } = createNamespacedHelpers("sudoku")
 
@@ -228,6 +239,22 @@ export default {
           this.$store.commit("sudoku/updateError", "Something went wrong 😥")
         }
       }
+    },
+    loadFromCamera() {
+      const worker = createWorker({
+        logger: m => console.log(m),
+      })
+
+      ;(async () => {
+        await worker.load()
+        await worker.loadLanguage("eng")
+        await worker.initialize("eng")
+        const {
+          data: { text },
+        } = await worker.recognize("https://tesseract.projectnaptha.com/img/eng_bw.png")
+        console.log(text)
+        await worker.terminate()
+      })()
     },
   },
 }

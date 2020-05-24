@@ -70,6 +70,7 @@ module.exports = function(/* ctx */) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       vueRouterMode: "history", // available values: 'hash', 'history'
+      // vueRouterMode: "hash", // available values: 'hash', 'history'
       // publicPath: "sudoku", // for my github.io
       // rtl: false, // https://quasar.dev/options/rtl-support
       // preloadChunks: true,
@@ -96,7 +97,7 @@ module.exports = function(/* ctx */) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      https: false,
+      https: true,
       port: 8080,
       open: true, // opens browser window automatically
     },
