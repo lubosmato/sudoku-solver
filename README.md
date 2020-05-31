@@ -28,11 +28,11 @@ Used technologies:
 1. Apply binary threshold on black and white image
 2. Invert colors
 3. Find lines with Hough Lines algorithm
-4. Group lines into `horizontal` and `vertical` lines based on their slope angle
-5. Average lines that are close to each other into single line for both line groups
-6. Find sequence of 10 lines which have distance between next line approximately same
-7. Find corners defined by intersections of first and last lines from each group
-8. Find perspective transformation and warp input image
+4. Group lines into `horizontal` and `vertical` groups based on their slope angle
+5. Average lines that are close to each other into single line for both groups
+6. Find sequence of 10 lines which have distance between next line approximately same for both groups
+7. Find corners defined by intersections of first and last lines from both groups
+8. Find perspective transformation and warp input image based on corner points
 9. Calculate cells positions
 10. Apply Tesseract.js OCR for all found cells
 
