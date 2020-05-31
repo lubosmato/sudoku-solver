@@ -202,7 +202,7 @@ export default {
       this.$store.commit("sudoku/updateGrid", numbers)
       this.$store.commit("sudoku/lockFilled")
       this.isScanning = false
-      this.$router.push({ name: "index" })
+      this.$router.replace({ name: "index" })
     },
   },
   mounted() {
