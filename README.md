@@ -1,6 +1,6 @@
 # Sudoku Solver (sudoku-solver)
 
-Sudoku solver app just becuase I am not good at sudoku solving but know how to be a good by a little help of computer
+Sudoku solver app is another fun project to test new stuff like: Web Workers, OpenCV.js, Tesseract.js, Quasar and PWA.
 
 ## Install the dependencies
 ```bash
