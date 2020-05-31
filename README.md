@@ -1,5 +1,7 @@
 # Sudoku Solver
 
+[Demo (fill 1)](https://lubosmato.github.io/sudoku/#/sudoku/MjY3ODkxNTM0NTQxNzYzMjg5OTM4MjQ1NzYxMzc1IDI4NDk2MTI0OTM2ODc1Njg5NDU3MTIzNDk2NTcyMzE4NzEzNjg0OTUyODUyMzE5NjQ3)
+
 [Demo](https://lubosmato.github.io/sudoku/#/)
 
 Sudoku solver is a fun project of mine to test new technologies and to be good at sudoku solving.
@@ -8,6 +10,9 @@ The app can:
 1. Generate sudoku puzzle with given difficulty
 2. Solve sudoku puzzle
 3. Scan sudoku puzzle
+4. Share sudoku puzzle link
+5. Print sudoku puzzle
+6. Download sudoku puzzle image
 
 Everything is written in JavaScript so it is damn slow on some devices 🙂. 
 
@@ -17,6 +22,7 @@ Used technologies:
 - [Quasar](https://quasar.dev/) - lovely [Vue.js](https://vuejs.org/) based framework with material design UI (and lot of other stuff)
 - [PWA](https://web.dev/progressive-web-apps/)
 - [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers)
+- [Vuex](https://vuex.vuejs.org/)
 
 # Scanning steps
 1. Apply binary threshold on black and white image
