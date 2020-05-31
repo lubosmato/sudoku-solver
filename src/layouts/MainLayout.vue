@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh LpR fFf">
-    <q-drawer show-if-above v-model="left" side="left" bordered v-if="$q.platform.is.desktop">
+    <q-drawer show-if-above v-model="left" side="left" bordered v-if="$q.platform.is.desktop" :width="325">
       <SudokuControls />
     </q-drawer>
 

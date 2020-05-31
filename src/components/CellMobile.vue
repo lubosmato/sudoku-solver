@@ -91,10 +91,10 @@ export default {
   justify-content: center;
 
   &.invalid {
-    border: 3px solid rgba(255, 0, 0, 0.637);
+    outline: 3px solid lighten($negative, 50);
   }
   &.readonly {
-    background: rgb(213, 239, 255);
+    background: lighten($primary, 45);
   }
 }
 
@@ -103,10 +103,10 @@ export default {
     background: var(--q-color-dark);
     color: white;
     &.invalid {
-      border: 3px solid rgb(255, 33, 33);
+      border: 3px solid lighten($negative, 25);
     }
     &.readonly {
-      background: rgb(52, 82, 105);
+      background: darken($primary, 22);
     }
   }
 }

@@ -41,6 +41,7 @@ export default {
     },
     setWorking(state, isWorking) {
       state.isWorking = isWorking
+      state.isFirstStart = false
     },
     updateError(state, errorMessage) {
       state.errorMessage = errorMessage
@@ -124,5 +125,6 @@ export default {
     errorMessage: "",
     isWorking: false,
     wasHelped: false,
+    isFirstStart: true,
   },
 }

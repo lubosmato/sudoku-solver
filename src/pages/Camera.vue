@@ -1,38 +1,67 @@
 <template>
-  <q-page class="q-pa-md full-height">
-    <q-btn label="Start" color="primary" @click="start" />
-    <q-slider v-model="canny1" :min="1" :step="1" :max="1000" />
-    <q-badge :label="`Canny1: ${canny1}`" />
-    <q-slider v-model="canny2" :min="0" :step="1" :max="1000" />
-    <q-badge :label="`Canny2: ${canny2}`" />
-    <br />
+  <div>
     <div class="webcam-wrapper">
-      <video ref="webcam" class="hidden"></video>
-      <canvas ref="canvas"></canvas>
+      <div class="webcam">
+        <video ref="webcam" class="hidden"></video>
+        <canvas ref="canvas"></canvas>
+      </div>
+      <div class="controls">
+        <div class="row q-col-gutter-md q-pr-md q-py-md full-width">
+          <div class="col-12 col-sm-6">
+            <q-btn
+              :to="{ name: 'index' }"
+              color="negative"
+              label="Back"
+              icon="keyboard_arrow_left"
+              class="full-width"
+              :disable="isScanning"
+            />
+          </div>
+          <div class="col-12 col-sm-6">
+            <q-btn
+              color="primary"
+              label="Scan"
+              icon-right="center_focus_strong"
+              class="full-width"
+              @click="scan"
+              :loading="isScanning"
+            />
+          </div>
+        </div>
+      </div>
     </div>
-  </q-page>
+  </div>
 </template>
 
 <script>
-import cv from "opencv.js-webassembly"
+import _ from "lodash"
+import CvWorker from "workerize-loader!pages/cv.worker.js"
+import { createWorker } from "tesseract.js"
 
 export default {
   name: "Camera",
   data() {
     return {
-      // canny1: 98,
-      // canny2: 17,
-      canny1: 38,
-      canny2: 78,
+      isReady: false,
+      isRunning: false,
+      isScanning: false,
+      cvWorker: CvWorker(),
     }
   },
   methods: {
     async start() {
+      this.$q.loading.show({ message: "Opening computer eyes..." })
+
       const width = 400
       const height = 400
 
       const canvas = this.$refs.canvas
       const webcam = this.$refs.webcam
+
+      const ctx = canvas.getContext("2d")
+
+      canvas.setAttribute("width", width)
+      canvas.setAttribute("height", height)
 
       webcam.setAttribute("width", width)
       webcam.setAttribute("height", height)
@@ -65,212 +94,160 @@ export default {
         webcam.srcObject = mediaStream
         webcam.play()
 
-        const vc = new cv.VideoCapture(webcam)
-        const src = new cv.Mat(height, width, cv.CV_8UC4)
+        let sudokuInfo = { corners: [], cells: [], image: null }
 
-        const houghThresh = 100
+        const runProcessing = async () => {
+          if (!this.isRunning) {
+            mediaStream.getTracks().forEach(track => track.stop())
+            return
+          }
+          ctx.drawImage(webcam, 0, 0, width, height)
 
-        const sortByRho = (a, b) => (a.rho - b.rho > 0 ? 1 : -1)
-
-        const dilateKernel = cv.Mat.ones(3, 3, cv.CV_8U)
-        const erodeKernel = cv.Mat.ones(5, 5, cv.CV_8U)
-
-        const processImage = () => {
-          let img = cv.Mat.zeros(src.rows, src.cols, cv.CV_8UC1)
-          cv.cvtColor(src, img, cv.COLOR_RGBA2GRAY, 0)
-          cv.Canny(img, img, this.canny1, this.canny2, 3)
-          cv.dilate(img, img, dilateKernel)
-          cv.erode(img, img, erodeKernel)
-
-          let houghLines = new cv.Mat()
-          cv.HoughLines(img, houghLines, 1, Math.PI / 180 / 2, houghThresh, 0, 0, 0, Math.PI)
-          img.delete()
-
-          const lines = Array.from({ length: Math.ceil(houghLines.rows / 2) }, (v, i) =>
-            houghLines.data32F.slice(i * 2, i * 2 + 2)
-          ).map(line => {
-            return { rho: line[0], theta: line[1] }
-          })
-          houghLines.delete()
-
-          const lineSize = width * 1.42
-          const angleTolerance = 0.3
-
-          const horizontalLines = lines
-            .filter(line => Math.abs(line.theta - Math.PI / 2) < angleTolerance)
-            .sort(sortByRho)
-
-          const verticalLines = lines
-            .map(line => {
-              // normalize negative rho
-              if (line.rho < 0) {
-                line.theta -= Math.PI
-                line.rho = -line.rho
-              }
-              return line
-            })
-            .filter(line => Math.abs(line.theta) < angleTolerance)
-            .sort(sortByRho)
-
-          const filterLines = linesToFilter => {
-            const averaged = []
-            for (let i = 0; i < linesToFilter.length - 1; i++) {
-              const groupAverage = { rho: 0, theta: 0 }
-              let groupLength = 0
-
-              while (i < linesToFilter.length - 1) {
-                const rhoJump = linesToFilter[i + 1].rho - linesToFilter[i].rho
-
-                if (rhoJump < 8) {
-                  groupAverage.rho += linesToFilter[i].rho
-                  groupAverage.theta += linesToFilter[i].theta
-                  groupLength++
-                  i++
-                } else {
-                  break
-                }
-              }
-
-              if (groupLength !== 0) {
-                groupAverage.rho /= groupLength
-                groupAverage.theta /= groupLength
-                averaged.push(groupAverage)
-              } else {
-                averaged.push(linesToFilter[i])
-              }
+          const { corners } = _.cloneDeep(sudokuInfo)
+          if (corners.length === 4) {
+            ctx.beginPath()
+            ctx.strokeStyle = "#ff0000ff"
+            ctx.lineWidth = 3
+            const drawLine = (p1, p2) => {
+              ctx.moveTo(p1.x, p1.y)
+              ctx.lineTo(p2.x, p2.y)
             }
-
-            if (averaged.length < 10) {
-              return []
-            }
-
-            const centerIndex = Math.ceil(averaged.length / 2)
-            const centerDiff = Math.abs(averaged[centerIndex + 1].rho) - Math.abs(averaged[centerIndex].rho)
-
-            // append dummy line
-            averaged.push({
-              rho: averaged[averaged.length - 1].rho + centerDiff,
-              theta: averaged[averaged.length - 1].theta,
-            })
-
-            const rhoDiffTolerance = centerDiff / 4
-            let begin = 0
-            let end = 0
-            for (let i = 0; i < averaged.length - 1; i++) {
-              const line = averaged[i]
-              const nextLine = averaged[i + 1]
-              const rhoDiff = Math.abs(nextLine.rho) - Math.abs(line.rho)
-              const hasCorrectDiff = Math.abs(rhoDiff - centerDiff) < rhoDiffTolerance
-              if (hasCorrectDiff) {
-                end = i + 2
-              } else {
-                begin = i + 1
-                end = begin + 1
-              }
-
-              const hasEnoughLines = end - begin >= 10
-              if (hasEnoughLines) break
-            }
-            const notEnoughLines = end - begin < 10
-            if (notEnoughLines) return []
-
-            const filtered = averaged.slice(begin, end)
-            return filtered
+            drawLine(corners[0], corners[1])
+            drawLine(corners[1], corners[2])
+            drawLine(corners[2], corners[3])
+            drawLine(corners[3], corners[0])
+            ctx.stroke()
           }
 
-          const filteredHorizontal = filterLines(horizontalLines, [255, 0, 0, 255])
-          for (const { rho, theta } of filteredHorizontal) {
-            let a = Math.cos(theta)
-            let b = Math.sin(theta)
-            let x0 = a * rho
-            let y0 = b * rho
-            let startPoint = { x: x0 - lineSize * b, y: y0 + lineSize * a }
-            let endPoint = { x: x0 + lineSize * b, y: y0 - lineSize * a }
-            cv.line(src, startPoint, endPoint, [0, 0, 255, 255], 2)
-          }
-
-          const filteredVertical = filterLines(verticalLines, [255, 255, 0, 255])
-          for (const { rho, theta } of filteredVertical) {
-            let a = Math.cos(theta)
-            let b = Math.sin(theta)
-            let x0 = a * rho
-            let y0 = b * rho
-            let startPoint = { x: x0 - lineSize * b, y: y0 + lineSize * a }
-            let endPoint = { x: x0 + lineSize * b, y: y0 - lineSize * a }
-            cv.line(src, startPoint, endPoint, [0, 255, 0, 255], 2)
-          }
-
-          const toCartesian = ({ rho, theta }) => ({
-            x: Math.cos(theta) * rho,
-            y: Math.sin(theta) * rho,
-          })
-          const intersection = (line1, line2) => {
-            const cart1 = toCartesian(line1)
-            const cart2 = toCartesian(line2)
-
-            return { x: cart1.x + cart2.x, y: cart1.y + cart2.y }
-          }
-
-          if (filteredHorizontal.length === 10 && filteredVertical.length === 10) {
-            console.log({ filteredHorizontal, filteredVertical })
-            const roiPoints = [
-              intersection(filteredHorizontal[0], filteredVertical[0]),
-              intersection(filteredHorizontal[0], filteredVertical[filteredVertical.length - 1]),
-              intersection(
-                filteredHorizontal[filteredHorizontal.length - 1],
-                filteredVertical[filteredVertical.length - 1]
-              ),
-              intersection(filteredHorizontal[filteredHorizontal.length - 1], filteredVertical[0]),
-            ]
-            roiPoints.push(roiPoints[0])
-
-            /*
-            for (let i = 0; i < roiPoints.length - 1; i++) {
-              const start = roiPoints[i]
-              const end = roiPoints[i + 1]
-              cv.line(src, start, end, [0, 255, 255, 255], 2)
-            }
-            */
-
-            for (let i = 0; i < roiPoints.length; i++) {
-              const end = roiPoints[i]
-              cv.line(src, { x: 0, y: 0 }, end, [255, 0, 255, 255], 1)
-            }
-
-            cv.circle(src, { x: 10, y: 10 }, 10, [255, 0, 0, 255], cv.FILLED)
-          }
-        }
-
-        const runProcessing = () => {
-          vc.read(src)
-          processImage()
-          cv.imshow(canvas, src)
           requestAnimationFrame(runProcessing)
         }
+        runProcessing()
 
-        requestAnimationFrame(runProcessing)
+        const runAnalysis = async () => {
+          if (!this.isRunning) return
 
-        // const mediaStreamTrack = mediaStream.getVideoTracks()[0]
-        // const imageCapture = new ImageCapture(mediaStreamTrack)
-        // console.log(imageCapture)
+          if (!this.isReady) {
+            this.isReady = await this.cvWorker.isReady()
+            if (this.isReady) this.$q.loading.hide()
+            requestAnimationFrame(runAnalysis)
+            return
+          }
 
-        // const imageBitmap = await imageCapture.grabFrame()
+          ctx.drawImage(webcam, 0, 0, width, height)
+          const imageData = ctx.getImageData(0, 0, width, height)
+          sudokuInfo = await this.cvWorker.findSudoku(width, height, new Uint8Array(imageData.data), this.isScanning)
 
-        // canvas.640 = imageBitmap.640
-        // canvas.480 = imageBitmap.480
-        // canvas.getContext("2d").drawImage(imageBitmap, 0, 0)
+          const { cells, image } = sudokuInfo
+          if (cells.length === 9 && this.isScanning) {
+            ctx.putImageData(new ImageData(image, width, height), 0, 0)
+
+            this.isRunning = false
+
+            const padding = [6, 6, 6, 6]
+            const worker = createWorker()
+            ;(async () => {
+              await worker.load()
+              await worker.loadLanguage("eng")
+              await worker.initialize("eng")
+              await worker.setParameters({
+                tessedit_char_whitelist: "123456789",
+              })
+
+              const scannedNumbers = []
+              for (let row = 0; row < 9; row++) {
+                const scannedRow = []
+                for (let col = 0; col < 9; col++) {
+                  const { left, top, right, bottom } = cells[row][col]
+                  const {
+                    data: { text },
+                  } = await worker.recognize(canvas, {
+                    rectangle: {
+                      left: left + padding[3],
+                      top: top + padding[0],
+                      width: right - left - padding[3] - padding[1],
+                      height: bottom - top - padding[0] - padding[2],
+                    },
+                  })
+                  ctx.fillStyle = "#03fc17aa"
+                  ctx.fillRect(
+                    left + padding[3],
+                    top + padding[0],
+                    right - left - padding[3] - padding[1],
+                    bottom - top - padding[0] - padding[2]
+                  )
+                  let n = parseInt(text.substr(0, 1))
+                  if (isNaN(n)) n = null
+                  scannedRow.push({ value: n })
+                }
+                scannedNumbers.push(scannedRow)
+              }
+              await worker.terminate()
+              this.onScanSuccess(scannedNumbers)
+            })()
+          }
+
+          if (this.isRunning) requestAnimationFrame(runAnalysis)
+        }
+        runAnalysis()
       } catch (e) {
         console.error("error:", e)
       }
     },
+    scan() {
+      this.isScanning = true
+    },
+    onScanSuccess(numbers) {
+      this.$store.commit("sudoku/unlockAll")
+      this.$store.commit("sudoku/reset")
+      this.$store.commit("sudoku/updateGrid", numbers)
+      this.$store.commit("sudoku/lockFilled")
+      this.isScanning = false
+      this.$router.push({ name: "index" })
+    },
   },
-  mounted() {},
+  mounted() {
+    this.isRunning = true
+    this.isScanning = false
+    this.start()
+  },
+  destroyed() {
+    this.isRunning = false
+    this.$q.loading.hide()
+    this.cvWorker.terminate()
+  },
 }
 </script>
 
 <style lang="scss" scoped>
 .webcam-wrapper {
+  width: 100vw;
+  height: 100vh;
+
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr min-content;
+  gap: 1px 1px;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+
+  & > div {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+
   canvas {
+    max-width: 100vw;
+    height: 75vh;
+  }
+  .button {
+    width: 100%;
+    min-width: 150px;
+    max-width: 500px;
+  }
+  .controls {
+    width: 100%;
   }
 }
 </style>

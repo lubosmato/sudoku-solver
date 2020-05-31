@@ -12,6 +12,7 @@
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.1",
     "chroma-js": "^2.1.0",
+    "html2canvas": "^1.0.0-rc.5",
     "opencv.js-webassembly": "^4.2.0",
     "quasar": "^1.0.0",
     "tesseract.js": "^2.1.1"

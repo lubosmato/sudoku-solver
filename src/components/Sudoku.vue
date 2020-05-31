@@ -69,13 +69,48 @@ export default {
     if (this.sudoku) {
       this.$store.dispatch("sudoku/import", this.sudoku)
     } else {
-      this.$store.dispatch("sudoku/generate", 1)
+      if (this.$store.state.sudoku.isFirstStart) {
+        this.$store.dispatch("sudoku/generate", 1)
+      }
     }
   },
 }
 </script>
 
 <style lang="scss">
+@media print {
+  html,
+  body {
+    height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+    background: white !important;
+  }
+  .q-drawer-container {
+    display: none;
+  }
+  .q-page-container {
+    padding-left: 0 !important;
+  }
+  .square {
+    width: 100vmin !important;
+    height: 100vmin !important;
+  }
+  body .controls {
+    display: none;
+  }
+  .cell {
+    border-color: black !important;
+  }
+  .input,
+  .input.readonly,
+  .input:read-only {
+    background: white !important;
+    color: black !important;
+  }
+}
+
 .main-page {
   height: 100vh;
   max-height: 100vh;

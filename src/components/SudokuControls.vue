@@ -1,56 +1,60 @@
 <template>
-  <div class="q-px-md q-pt-md full-height full-width column">
+  <div class="q-px-md q-pt-md full-height full-width column controls">
     <div class="col q-gutter-y-md">
-      <div class="row q-gutter-x-md">
-        <div class="col">
-          <q-btn color="primary" icon="lock" class="full-width" @click="lockFilled" />
+      <div class="row q-col-gutter-x-md q-mt-md">
+        <div class="col-6">
+          <q-btn :to="{ name: 'camera' }" color="primary" icon-right="camera" label="Scan" class="full-width" />
         </div>
-        <div class="col">
-          <q-btn color="primary" icon="lock_open" class="full-width" @click="unlockAll" />
-        </div>
-      </div>
-
-      <div class="row q-gutter-x-md">
-        <div class="col">
-          <q-btn color="red" icon-right="restore" label="Reset" class="full-width" @click="reset" />
-        </div>
-        <div class="col">
-          <q-btn color="primary" icon-right="casino" label="Solve" class="full-width" @click="solve" />
-        </div>
-      </div>
-
-      <q-slider v-model="difficulty" :min="1" :max="10" :step="1" snap label color="red" />
-      <q-badge class="q-my-none" color="red">Difficulty: {{ difficulty }}</q-badge>
-
-      <div class="row q-gutter-x-md q-mt-sm">
-        <q-btn color="red" icon="share" @click="share" />
-
-        <q-tooltip
-          :content-class="{ hidden: !isCopiedShown }"
-          content-style="font-size: 1em"
-          transition-show="scale"
-          transition-hide="scale"
-        >
-          Copied to clipboard
-        </q-tooltip>
-
-        <div class="col">
+        <div class="col-6">
           <q-btn color="primary" icon-right="fas fa-random" label="Generate" class="full-width" @click="generate" />
         </div>
       </div>
 
-      <div class="col">
-        <q-btn
-          color="primary"
-          icon-right="camera"
-          label="Load from camera"
-          class="full-width"
-          @click="loadFromCamera"
-        />
+      <q-slider v-model="difficulty" :min="1" :max="10" :step="1" snap label color="secondary" class="q-mt-sm" dense />
+      <q-badge class="q-my-none" color="secondary">Difficulty: {{ difficulty }}</q-badge>
+
+      <q-separator />
+
+      <div class="row q-col-gutter-x-md">
+        <div class="col-3">
+          <q-btn color="primary" icon="lock" class="full-width" @click="lockFilled" />
+        </div>
+        <div class="col-3">
+          <q-btn color="primary" icon="lock_open" class="full-width" @click="unlockAll" />
+        </div>
+        <div class="col-6">
+          <q-btn color="primary" icon-right="casino" label="Solve" class="full-width" @click="solve" outline />
+        </div>
+      </div>
+
+      <div class="row q-col-gutter-x-md">
+        <div class="col-3">
+          <q-btn color="primary" icon-right="get_app" class="full-width" @click="download" />
+        </div>
+        <div class="col-3">
+          <q-btn color="primary" icon-right="print" class="full-width" @click="print" />
+        </div>
+        <div class="col-3">
+          <q-btn color="secondary" icon="share" @click="share" class="full-width" />
+
+          <q-tooltip
+            anchor="top left"
+            :value="isCopiedShown"
+            content-style="font-size: 1em"
+            transition-show="scale"
+            transition-hide="scale"
+            no-parent-event
+          >
+            Copied to clipboard
+          </q-tooltip>
+        </div>
+        <div class="col-3">
+          <q-btn color="negative" icon-right="restore" class="full-width" @click="reset" />
+        </div>
       </div>
 
       <q-dialog :value="hasError" transition-show="scale" transition-hide="scale" @hide="acknowledgeError">
-        <q-card class="bg-red text-white" style="width: 300px">
+        <q-card class="bg-secondary text-white" style="width: 300px">
           <q-card-section>
             <div class="text-h6">Sudoku error</div>
           </q-card-section>
@@ -59,7 +63,7 @@
             {{ errorMessage }}
           </q-card-section>
 
-          <q-card-actions align="right" class="bg-white text-red">
+          <q-card-actions align="right" class="bg-white text-secondary">
             <q-btn flat label="OK" v-close-popup />
           </q-card-actions>
         </q-card>
@@ -88,11 +92,7 @@
 </template>
 
 <script>
-// TODO add load from camera button - line fitter - OCR for numbers, etc.
-// TODO add export pdf button
-// TODO add print button
-
-import { createWorker } from "tesseract.js"
+import html2canvas from "html2canvas"
 import { createNamespacedHelpers } from "vuex"
 const { mapMutations, mapState } = createNamespacedHelpers("sudoku")
 
@@ -174,7 +174,7 @@ const sudokuFacts = [
   "the Guinness World Record for the fastest time to complete a Sudoku is less than 1 minute and a half",
   "in the year following Sudoku going viral, pencil sales are said to have increased by around 700%",
   "the name “Sudoku” can be broken down into “Su” which means “Number” and “Doku” which means “Single/Only.”",
-  "the New York Time crossword editor predicted that the Sudoku mania wouldn’t last; he was wrong",
+  "the New York Time crossword editor psecondaryicted that the Sudoku mania wouldn’t last; he was wrong",
   "while a Sudoku puzzle can have more than one solution, a well-formed puzzle has just one unique solution",
   "JavaScript is not very fast language and this app is written in JavaScript",
 ]
@@ -220,41 +220,64 @@ export default {
     },
     async share() {
       const exportedSudoku = this.$store.getters["sudoku/exported"]
-      const url = `${window.location.origin}${this.$router.options.base}${exportedSudoku}` // TODO will not work in "hash" router mode
+      const url = `${window.location.origin}${this.$router.options.base}sudoku/${exportedSudoku}` // TODO will not work in "hash" router mode
 
-      try {
-        await navigator.share({
-          title: "Hey! Check this Sudoku 🙂",
-          text: "I just generated this Sudoku puzzle for you!",
+      const navigatorShare = () =>
+        navigator.share({
+          title: "Check out this Sudoku! 🙂",
+          text: "Check out this Sudoku! 🙂",
           url,
         })
-      } catch {
+
+      if (this.$q.platform.is.mobile) {
         try {
-          await navigator.clipboard.writeText(url)
-          this.isCopiedShown = true
-          setTimeout(() => {
-            this.isCopiedShown = false
-          }, 2000)
+          await navigatorShare()
+          // eslint-disable-next-line no-empty
+        } catch {}
+      } else {
+        try {
+          await navigatorShare()
         } catch {
-          this.$store.commit("sudoku/updateError", "Something went wrong 😥")
+          try {
+            await navigator.clipboard.writeText(url)
+            this.isCopiedShown = true
+            setTimeout(() => {
+              this.isCopiedShown = false
+            }, 2000)
+          } catch {
+            this.$store.commit("sudoku/updateError", "Something went wrong 😥")
+          }
         }
       }
     },
-    loadFromCamera() {
-      const worker = createWorker({
-        logger: m => console.log(m),
-      })
+    async download() {
+      const saveAs = (uri, filename) => {
+        const link = document.createElement("a")
 
-      ;(async () => {
-        await worker.load()
-        await worker.loadLanguage("eng")
-        await worker.initialize("eng")
-        const {
-          data: { text },
-        } = await worker.recognize("https://tesseract.projectnaptha.com/img/eng_bw.png")
-        console.log(text)
-        await worker.terminate()
-      })()
+        if (typeof link.download === "string") {
+          link.href = uri
+          link.download = filename
+
+          //Firefox requires the link to be in the body
+          document.body.appendChild(link)
+
+          //simulate click
+          link.click()
+
+          //remove the link when done
+          document.body.removeChild(link)
+        } else {
+          window.open(uri)
+        }
+      }
+      this.unlockAll()
+      await this.$nextTick()
+      const canvas = await html2canvas(document.querySelector(".main-grid"))
+      this.lockFilled()
+      saveAs(canvas.toDataURL(), "suodku.png")
+    },
+    print() {
+      window.print()
     },
   },
 }
