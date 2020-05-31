@@ -188,7 +188,7 @@ export default {
   data() {
     return {
       isCopiedShown: false,
-      difficulty: 1,
+      difficulty: 3,
       workingMessage: "",
     }
   },
@@ -220,14 +220,23 @@ export default {
     },
     async share() {
       const exportedSudoku = this.$store.getters["sudoku/exported"]
-      const url = `${window.location.origin}${this.$router.options.base}sudoku/${exportedSudoku}` // TODO will not work in "hash" router mode
+      const publicPath = "sudoku/" // TODO get publicPath from quasar.conf.js somehow
+      let url = ""
+      if (this.$router.options.mode === "hash") {
+        url = `${window.location.origin}/${publicPath}#/sudoku/${exportedSudoku}`
+      } else {
+        url = `${window.location.origin}/${publicPath}sudoku/${exportedSudoku}`
+      }
 
-      const navigatorShare = () =>
-        navigator.share({
+      const navigatorShare = () => {
+        const data = {
           title: "Check out this Sudoku! 🙂",
           text: "Check out this Sudoku! 🙂",
           url,
-        })
+        }
+        if (navigator.canShare !== undefined && !navigator.canShare(data)) throw new Error("Cannot share")
+        navigator.share(data)
+      }
 
       if (this.$q.platform.is.mobile) {
         try {
@@ -236,17 +245,13 @@ export default {
         } catch {}
       } else {
         try {
-          await navigatorShare()
+          await navigator.clipboard.writeText(url)
+          this.isCopiedShown = true
+          setTimeout(() => {
+            this.isCopiedShown = false
+          }, 2000)
         } catch {
-          try {
-            await navigator.clipboard.writeText(url)
-            this.isCopiedShown = true
-            setTimeout(() => {
-              this.isCopiedShown = false
-            }, 2000)
-          } catch {
-            this.$store.commit("sudoku/updateError", "Something went wrong 😥")
-          }
+          this.$store.commit("sudoku/updateError", "Something went wrong 😥")
         }
       }
     },

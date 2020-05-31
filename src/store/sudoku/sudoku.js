@@ -130,10 +130,10 @@ class Sudoku {
     this.updateGrid(this.possibleSolutions[0])
     this.lockFilled()
 
-    const maximumTries = difficulty * 20
-    for (let i = 0; i < maximumTries; i++) {
-      const x = Math.floor(Math.random() * this.sudokuSize)
-      const y = Math.floor(Math.random() * this.sudokuSize)
+    const removedCells = Sudoku._shuffleArray([...this])
+    const toDeleteCount = (Math.min(10, difficulty) / 10) * 9 * 9
+    for (let i = 0; i < toDeleteCount; i++) {
+      const { x, y } = removedCells.pop()
 
       if (!this.grid[y][x].isLocked) continue
 
