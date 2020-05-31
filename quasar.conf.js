@@ -118,8 +118,7 @@ module.exports = function(/* ctx */) {
       manifest: {
         name: "Sudoku Solver",
         short_name: "Sudoku Solver",
-        description:
-          "Sudoku solver app just becuase I am not good at sudoku solving but know how to be a good by a little help of computer",
+        description: "Sudoku solver app generates sudoku puzzles, solves them and scans from paper. Have fun 🙂",
         display: "standalone",
         orientation: "portrait",
         background_color: "#ffffff",
