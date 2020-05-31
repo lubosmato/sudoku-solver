@@ -1,6 +1,34 @@
-# Sudoku Solver (sudoku-solver)
+# Sudoku Solver
 
-Sudoku solver app is another fun project to test new stuff like: Web Workers, OpenCV.js, Tesseract.js, Quasar and PWA.
+[Demo](https://lubosmato.github.io/sudoku/#/)
+
+Sudoku solver is a fun project of mine to test new technologies and to be good at sudoku solving.
+
+The app can: 
+1. Generate sudoku puzzle with given difficulty
+2. Solve sudoku puzzle
+3. Scan sudoku puzzle
+
+Everything is written in JavaScript so it is damn slow on some devices 🙂. 
+
+Used technologies:
+- [OpenCV.js](https://docs.opencv.org/master/d5/d10/tutorial_js_root.html) - WebAssembly compiled OpenCV
+- [Tesseract.js](https://github.com/naptha/tesseract.js) - WebAssembly compiled Tessarct OCR
+- [Quasar](https://quasar.dev/) - lovely [Vue.js](https://vuejs.org/) based framework with material design UI (and lot of other stuff)
+- [PWA](https://web.dev/progressive-web-apps/)
+- [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers)
+
+# Scanning steps
+1. Apply binary threshold on black and white image
+2. Invert colors
+3. Find lines with Hough Lines algorithm
+4. Group lines into `horizontal` and `vertical` lines based on their slope angle
+5. Average lines that are close to each other into single line for both line groups
+6. Find sequence of 10 lines which have distance between next line approximately same
+7. Find corners defined by intersections of first and last lines from each group
+8. Find perspective transformation and warp input image
+9. Calculate cells positions
+10. Apply Tesseract.js OCR for all found cells
 
 ## Install the dependencies
 ```bash
@@ -9,7 +37,7 @@ yarn
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
-quasar dev
+quasar dev -m spa
 ```
 
 ### Lint the files
@@ -19,7 +47,7 @@ yarn run lint
 
 ### Build the app for production
 ```bash
-quasar build
+quasar build -m pwa
 ```
 
 ### Customize the configuration
