@@ -275,11 +275,8 @@ export default {
           window.open(uri)
         }
       }
-      this.unlockAll()
-      await this.$nextTick()
       const canvas = await html2canvas(document.querySelector(".main-grid"))
-      this.lockFilled()
-      saveAs(canvas.toDataURL(), "suodku.png")
+      saveAs(canvas.toDataURL(), "sudoku.png")
     },
     print() {
       window.print()

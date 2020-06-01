@@ -127,7 +127,7 @@ class Sudoku {
     this.possibleSolutions = []
 
     this.generateStep()
-    this.updateGrid(this.possibleSolutions[0])
+    this.updateGrid(this.possibleSolutions[0], false)
     this.lockFilled()
 
     const removedCells = Sudoku._shuffleArray([...this])
@@ -212,11 +212,19 @@ class Sudoku {
     this.possibleSolutions.push(_.cloneDeep(this.grid))
   }
 
-  updateGrid(newGrid) {
+  updateGrid(newGrid, isUpdatingAll) {
     for (const { x, y } of this) {
       this.grid[y][x].value = newGrid[y][x].value
+      if (isUpdatingAll) {
+        this.grid[y][x].isLocked = newGrid[y][x].isLocked
+        this.grid[y][x].hasError = newGrid[y][x].hasError
+      }
     }
     this.updateErrors()
+  }
+
+  isCompleted() {
+    return !this.grid.flat().some(cell => cell.hasError || cell.value === null)
   }
 
   isPossibleValue(x, y, value) {

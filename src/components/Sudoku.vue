@@ -68,9 +68,12 @@ export default {
   mounted() {
     if (this.sudoku) {
       this.$store.dispatch("sudoku/import", this.sudoku)
+      this.$router.replace({ name: "index" })
     } else {
-      if (this.$store.state.sudoku.isFirstStart) {
-        this.$store.dispatch("sudoku/generate", 1)
+      try {
+        this.$store.commit("sudoku/loadState")
+      } catch {
+        this.$store.dispatch("sudoku/generate", 3)
       }
     }
   },
