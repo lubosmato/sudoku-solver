@@ -1,8 +1,8 @@
 # Sudoku Solver
 
-[Demo (fill 1)](https://lubosmato.github.io/sudoku/#/sudoku/MjY3ODkxNTM0NTQxNzYzMjg5OTM4MjQ1NzYxMzc1IDI4NDk2MTI0OTM2ODc1Njg5NDU3MTIzNDk2NTcyMzE4NzEzNjg0OTUyODUyMzE5NjQ3)
+<a href="https://lubosmato.github.io/sudoku/#/sudoku/MjY3ODkxNTM0NTQxNzYzMjg5OTM4MjQ1NzYxMzc1IDI4NDk2MTI0OTM2ODc1Njg5NDU3MTIzNDk2NTcyMzE4NzEzNjg0OTUyODUyMzE5NjQ3" target="_blank">Demo (fill 1)</a>
 
-[Demo](https://lubosmato.github.io/sudoku/#/)
+<a href="https://lubosmato.github.io/sudoku/#/" target="_blank">Demo</a>
 
 Sudoku solver is a fun project of mine to test new technologies and to be good at sudoku solving.
 
