@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "chroma-js": "^2.1.0",
     "html2canvas": "^1.0.0-rc.5",
     "opencv.js-webassembly": "^4.2.0",
