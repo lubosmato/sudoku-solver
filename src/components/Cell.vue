@@ -78,6 +78,7 @@ export default {
   text-align-last: center;
   &.invalid {
     border: 3px solid lighten($negative, 20);
+    outline: 3px solid lighten($negative, 20);
   }
   &:read-only {
     user-select: none;
@@ -90,7 +91,8 @@ export default {
     background: var(--q-color-dark);
     color: white;
     &.invalid {
-      border: 3px solid $primary;
+      border: 3px solid lighten($negative, 5);
+      outline: 1px solid lighten($negative, 5);
     }
     &:read-only {
       background: darken($primary, 22);

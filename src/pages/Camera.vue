@@ -66,11 +66,9 @@ export default {
       webcam.setAttribute("width", width)
       webcam.setAttribute("height", height)
 
-      try {
+      const openCameraStream = async () => {
         const devices = await navigator.mediaDevices.enumerateDevices()
-        const environmentCamera = devices.find(
-          device => device.kind === "videoinput" && device.label.includes("facing back")
-        )
+        const environmentCamera = devices.find(device => device.kind === "videoinput" && device.label.includes("back"))
         const constraints = {
           video: {
             width: {
@@ -89,7 +87,12 @@ export default {
           }
         }
 
-        const mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
+        return await navigator.mediaDevices.getUserMedia(constraints)
+      }
+
+      try {
+        await openCameraStream() // NOTE this fixes a problem when accessed to camera stream for first time - enumeration of devices does not contain labels in such case
+        const mediaStream = await openCameraStream()
 
         webcam.srcObject = mediaStream
         webcam.play()
@@ -144,7 +147,12 @@ export default {
             this.isRunning = false
 
             const padding = [6, 6, 6, 6]
-            const worker = createWorker()
+            const worker = createWorker({
+              workerPath: "./statics/worker.min.js",
+              corePath: "./statics/tesseract-core.wasm.js",
+              langPath: "./statics/",
+            })
+
             ;(async () => {
               await worker.load()
               await worker.loadLanguage("eng")
